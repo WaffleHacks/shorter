@@ -33,10 +33,6 @@ jobs:
           args: worker-build
       - run: |
           echo $(readlink --canonicalize ~/.cargo/bin) >> $GITHUB_PATH
-      - run: |
-          echo $PATH
-          echo "${{ env.PATH }}"
-      - run: |
           npm i @cloudflare/wrangler
           npx wrangler publish
         env:
