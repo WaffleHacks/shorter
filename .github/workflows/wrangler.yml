@@ -35,6 +35,7 @@ jobs:
           ls ~/.cargo/bin
           echo $(readlink --canonicalize ~/.cargo/bin)
           echo $PATH
+          echo "${{ env.PATH }}"
       - uses: cloudflare/wrangler-action@1.3.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
