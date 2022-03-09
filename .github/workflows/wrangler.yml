@@ -20,10 +20,10 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-${{ github.run_id }}
+          key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-${{ github.run_id }}
           restore-keys: |
-            ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-
-            ${{ runner.os }}-cargo-
+            cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-
+            cargo-${{ runner.os }}-
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
