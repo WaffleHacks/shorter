@@ -30,11 +30,9 @@ jobs:
           toolchain: stable
           override: true
           target: wasm32-unknown-unknown
-      - uses: actions-rs/install@v0.1
-        with:
-          crate: worker-build
       - run: |
           echo $(readlink --canonicalize ~/.cargo/bin) >> $GITHUB_PATH
+          cargo install worker-build || true
           npm i @cloudflare/wrangler
           npx wrangler publish
         env:
