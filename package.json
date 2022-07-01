@@ -3,5 +3,13 @@
   "workspaces": [
     "./director",
     "./manage"
-  ]
+  ],
+  "scripts": {
+    "dev": "concurrently -n w: \"yarn:dev:*\"",
+    "dev:director": "yarn workspace director dev",
+    "dev:manage": "yarn workspace manage dev"
+  },
+  "devDependencies": {
+    "concurrently": "^7.2.2"
+  }
 }
