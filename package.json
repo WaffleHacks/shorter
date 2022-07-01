@@ -1,0 +1,13 @@
+{
+  "private": true,
+  "workspaces": [
+    "./director",
+    "./manage"
+  ],
+  "scripts": {
+    "dev": "concurrently -n director \"yarn workspace director dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^7.2.2"
+  }
+}
