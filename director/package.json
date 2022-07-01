@@ -7,7 +7,8 @@
   "license": "MIT",
   "scripts": {
     "build": "node build.mjs",
-    "dev": "miniflare --live-reload --build-command \"yarn build\" --build-watch-path ./src --debug --modules dist/index.mjs --port 8778"
+    "dev": "miniflare --live-reload --build-command \"yarn build\" --build-watch-path ./src --debug --modules dist/index.mjs --port 8778",
+    "deploy": "wrangler publish"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^3.14.0",
