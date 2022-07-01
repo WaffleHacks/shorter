@@ -1,4 +1,4 @@
-async function handle(request: Request, env: Bindings): Promise<Response> {
+async function handle(request: Request, { LINKS }: Bindings): Promise<Response> {
   return new Response("hello");
 }
 
