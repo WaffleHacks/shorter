@@ -58,7 +58,7 @@ export const action: ActionFunction = async ({ request, context }) => {
   const { values } = result;
 
   // Insert into the database
-  const link: LinkT = { enabled: false, usages: 0, url: values.url };
+  const link: LinkT = { enabled: true, usages: 0, url: values.url };
   await context.links.put(values.slug, JSON.stringify(link));
 
   return redirect(`/links/${values.slug}`);
