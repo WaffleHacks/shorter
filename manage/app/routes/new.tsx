@@ -2,8 +2,7 @@ import { ExclamationCircleIcon } from '@heroicons/react/outline';
 import { json, redirect } from '@remix-run/cloudflare';
 import { Form, Link, useActionData, useTransition } from '@remix-run/react';
 
-import type { Link as LinkT } from '~/lib/link';
-import type { ActionFunction } from '~/lib/types';
+import type { ActionFunction, ShortLink } from '~/lib/types';
 
 interface Validated {
   errors?: Partial<Params>;
@@ -58,7 +57,7 @@ export const action: ActionFunction = async ({ request, context }) => {
   const { values } = result;
 
   // Insert into the database
-  const link: LinkT = { enabled: true, usages: 0, url: values.url };
+  const link: ShortLink = { enabled: true, usages: 0, url: values.url };
   await context.links.put(values.slug, JSON.stringify(link));
 
   return redirect(`/links/${values.slug}`);

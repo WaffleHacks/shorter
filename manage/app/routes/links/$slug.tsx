@@ -7,17 +7,16 @@ import {
 } from '@heroicons/react/outline';
 import { Link, useLoaderData, useParams } from '@remix-run/react';
 
-import type { Link as LinkT } from '~/lib/link';
-import type { LoaderFunction } from '~/lib/types';
+import type { LoaderFunction, ShortLink } from '~/lib/types';
 
 export const loader: LoaderFunction = async ({ params, context }) => {
   const slug = params.slug as string;
-  return await context.links.get<LinkT>(slug, { type: 'json' });
+  return await context.links.get<ShortLink>(slug, { type: 'json' });
 };
 
 export default function ViewLink() {
   const { slug } = useParams();
-  const data = useLoaderData<LinkT>();
+  const data = useLoaderData<ShortLink>();
 
   // TODO: add success notification
   const onCopy = () => navigator.clipboard.writeText(`https://wffl.link/${slug}`);

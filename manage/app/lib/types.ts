@@ -15,3 +15,9 @@ export interface ActionFunction {
 export interface LoaderFunction {
   (args: FunctionArgs): Promise<Response> | Response | Promise<AppData> | AppData;
 }
+
+export interface ShortLink {
+  usages: number;
+  enabled: boolean;
+  url: string;
+}
