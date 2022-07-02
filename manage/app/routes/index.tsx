@@ -35,7 +35,8 @@ function LinkList(): JSX.Element {
 export default function Index() {
   return (
     <>
-      <div className="flex justify-end">
+      <div className="flex justify-between">
+        <h3 className="text-2xl mt-1">Links</h3>
         <Link
           to="/new"
           className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
