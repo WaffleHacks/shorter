@@ -1,7 +1,21 @@
-import { AddIcon } from '@chakra-ui/icons';
-import { Button, Flex, Heading, Table, TableContainer, Tbody, Th, Thead, Tr } from '@chakra-ui/react';
+import { AddIcon, SearchIcon } from '@chakra-ui/icons';
+import {
+  Button,
+  Flex,
+  Heading,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  Table,
+  TableContainer,
+  Tbody,
+  Th,
+  Thead,
+  Tr,
+} from '@chakra-ui/react';
 import { json } from '@remix-run/cloudflare';
 import { Link, useLoaderData } from '@remix-run/react';
+import { useState } from 'react';
 
 import { EmptyRow, Row } from '~/components/Row';
 import type { LoaderFunction } from '~/lib/types';
@@ -12,7 +26,10 @@ export const loader: LoaderFunction = async ({ context }) => {
 };
 
 export default function Index() {
+  const [filter, setFilter] = useState('');
+
   const links = useLoaderData<string[]>();
+  const filtered = links.filter((slug) => slug.startsWith(filter));
 
   return (
     <>
@@ -25,6 +42,17 @@ export default function Index() {
         </Button>
       </Flex>
 
+      <InputGroup mt={5} maxW="lg">
+        <InputLeftElement pointerEvents="none">
+          <SearchIcon color="gray.400" />
+        </InputLeftElement>
+        <Input
+          placeholder="Search..."
+          value={filter}
+          onInput={(e) => setFilter((e.target as HTMLInputElement).value)}
+        />
+      </InputGroup>
+
       <TableContainer mt={5}>
         <Table variant="simple">
           <Thead>
@@ -35,8 +63,16 @@ export default function Index() {
             </Tr>
           </Thead>
           <Tbody>
-            {links.length === 0 && <EmptyRow />}
-            {links.map((s) => (
+            {links.length === 0 && (
+              <EmptyRow title="No links yet" description="Get started by adding a new short-link" promptCreate />
+            )}
+            {links.length !== 0 && filtered.length === 0 && (
+              <EmptyRow
+                title="No links found"
+                description="We couldn't find any links matching your query. Please try again."
+              />
+            )}
+            {filtered.map((s) => (
               <Row slug={s} key={s} />
             ))}
           </Tbody>
