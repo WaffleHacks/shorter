@@ -113,7 +113,7 @@ export default function New(): JSX.Element {
           <Button as={Link} to="/" variant="outline">
             Back
           </Button>
-          <Button type="submit" ml={3} colorScheme="green" isLoading={transition.state === 'submitting'}>
+          <Button type="submit" ml={3} colorScheme="green" isLoading={transition.state !== 'idle'}>
             Create
           </Button>
         </Flex>
