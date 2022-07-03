@@ -1,6 +1,7 @@
-import { ChevronRightIcon, LinkIcon, PlusIcon } from '@heroicons/react/outline';
+import { AddIcon, ChevronRightIcon } from '@chakra-ui/icons';
+import { Box, Button, Flex, Grid, Heading, LinkBox, LinkOverlay } from '@chakra-ui/react';
 import { json } from '@remix-run/cloudflare';
-import { Link, useLoaderData } from '@remix-run/react';
+import { Link as RemixLink, useLoaderData } from '@remix-run/react';
 
 import Empty from '~/components/Empty';
 import type { LoaderFunction } from '~/lib/types';
@@ -13,42 +14,57 @@ export const loader: LoaderFunction = async ({ context }) => {
 function LinkList(): JSX.Element {
   const links = useLoaderData<string[]>();
 
-  if (links.length === 0)
-    return <Empty title="No links yet" description="Get started by adding a new short-link" icon={LinkIcon} />;
+  if (links.length === 0) return <Empty />;
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <Grid
+      gap={4}
+      templateColumns={{
+        base: 'repeat(1, minmax(0, 1fr))',
+        sm: 'repeat(2, minmax(0, 1fr))',
+        lg: 'repeat(3, minmax(0, 1fr))',
+        xl: 'repeat(4, minmax(0, 1fr))',
+      }}
+    >
       {links.map((l) => (
-        <Link
+        <LinkBox
           key={l}
-          to={`/links/${l}`}
-          className="flex justify-between rounded-lg border border-gray-300 bg-white px-6 py-3 shadow-sm flex items-center space-x-3 hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          borderRadius="lg"
+          borderWidth="1px"
+          borderColor="gray.300"
+          shadow="sm"
+          px={6}
+          py={3}
+          _hover={{ borderColor: 'gray.400' }}
         >
-          <p className="text-md font-medium text-gray-900">{l}</p>
-          <ChevronRightIcon className="h-4 w-4" aria-hidden="true" />
-        </Link>
+          <LinkOverlay as={RemixLink} to={`/links/${l}`} color="gray.900" fontSize="md" fontWeight="md">
+            {l}
+          </LinkOverlay>
+          <ChevronRightIcon h={4} w={4} aria-hidden="true" />
+        </LinkBox>
       ))}
-    </div>
+    </Grid>
   );
 }
 
 export default function Index() {
   return (
     <>
-      <div className="flex justify-between">
-        <h3 className="text-2xl mt-1">Links</h3>
-        <Link
-          to="/new"
-          className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-        >
+      <Flex justify="space-between">
+        <Heading mt={1} size="lg" fontWeight="md">
+          Links
+        </Heading>
+        <Button as={RemixLink} to="/new" colorScheme="green" rightIcon={<AddIcon />}>
           New
-          <PlusIcon className="ml-3 -mr-1 h-5 w-5" aria-hidden="true" />
-        </Link>
-      </div>
+        </Button>
+      </Flex>
 
-      <div className="mt-5">
+      <Box mt={5}>
         <LinkList />
-      </div>
+      </Box>
     </>
   );
 }

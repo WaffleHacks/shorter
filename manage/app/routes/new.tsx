@@ -1,4 +1,17 @@
-import { ExclamationCircleIcon } from '@heroicons/react/outline';
+import {
+  Box,
+  Button,
+  Flex,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Heading,
+  Input,
+  InputGroup,
+  InputLeftAddon,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
 import { json, redirect } from '@remix-run/cloudflare';
 import { Form, Link, useActionData, useTransition } from '@remix-run/react';
 
@@ -68,96 +81,43 @@ export default function New(): JSX.Element {
   const data = useActionData<Validated>();
 
   return (
-    <Form method="post" className="space-y-8 divide-y divide-gray-200 sm:space-y-5">
-      <div>
-        <div>
-          <h3 className="text-lg leading-6 font-medium text-gray-900">New Short-link</h3>
-          <p className="mt-1 max-w-2xl text-sm text-gray-500">Create a new short-link for people to use.</p>
-        </div>
+    <Box as={Form} method="post" className="space-y-8 divide-y divide-gray-200 sm:space-y-5">
+      <VStack align="stretch">
+        <Box>
+          <Heading size="lg" color="gray.900" fontWeight="md">
+            New Short-link
+          </Heading>
+          <Text mt={1} size="sm" color="gray.500" maxW="2xl">
+            Create a new short-link for people to use.
+          </Text>
+        </Box>
 
-        <div className="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
-          <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-            <label htmlFor="slug" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
-              Slug
-            </label>
-            <div className="max-w-lg mt-1 sm:mt-0 sm:col-span-2">
-              <div className="relative flex rounded-md shadow-sm">
-                <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
-                  wffl.link/
-                </span>
-                <input
-                  type="text"
-                  name="slug"
-                  id="slug"
-                  defaultValue={data?.values.slug}
-                  autoComplete="off"
-                  className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-none rounded-r-md sm:text-sm border-gray-300"
-                  aria-describedby={data?.errors?.slug ? `slug-error` : undefined}
-                  aria-invalid={!!data?.errors?.slug}
-                />
-                {data?.errors?.slug && (
-                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                    <ExclamationCircleIcon className="h-5 w-5 text-red-500" aria-hidden="true" />
-                  </div>
-                )}
-              </div>
-              {data?.errors?.slug && (
-                <p className="mt-2 text-sm text-red-600" id="slug-error">
-                  {data?.errors?.slug}
-                </p>
-              )}
-            </div>
-          </div>
+        <Box mt={{ base: 6, sm: 5 }}>
+          <FormControl isRequired isInvalid={!!data?.errors?.slug}>
+            <FormLabel htmlFor="slug">Slug</FormLabel>
+            <InputGroup>
+              <InputLeftAddon children="wffl.link/" />
+              <Input id="slug" name="slug" defaultValue={data?.values.slug} />
+            </InputGroup>
+            {data?.errors?.slug && <FormErrorMessage>{data?.errors?.slug}</FormErrorMessage>}
+          </FormControl>
 
-          <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-            <label htmlFor="url" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
-              URL
-            </label>
-            <div className="max-w-lg mt-1 sm:mt-0 sm:col-span-2">
-              <div className="relative">
-                <input
-                  type="url"
-                  name="url"
-                  id="url"
-                  defaultValue={data?.values.url}
-                  autoComplete="off"
-                  className="block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
-                  aria-describedby={data?.errors?.url ? `slug-error` : undefined}
-                  aria-invalid={!!data?.errors?.url}
-                />
-                {data?.errors?.url && (
-                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                    <ExclamationCircleIcon className="h-5 w-5 text-red-500" aria-hidden="true" />
-                  </div>
-                )}
-              </div>
-              {data?.errors?.url && (
-                <p className="mt-2 text-sm text-red-600" id="url-error">
-                  {data?.errors?.url}
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
+          <FormControl mt={{ base: 6, sm: 5 }} isRequired isInvalid={!!data?.errors?.url}>
+            <FormLabel htmlFor="url">URL</FormLabel>
+            <Input id="url" name="url" defaultValue={data?.values.url} />
+            {data?.errors?.url && <FormErrorMessage>{data?.errors?.url}</FormErrorMessage>}
+          </FormControl>
+        </Box>
 
-      <div className="pt-5">
-        <div className="flex justify-end">
-          <Link
-            to="/"
-            className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
+        <Flex pt={5} justifyContent="end">
+          <Button as={Link} to="/" variant="outline">
             Back
-          </Link>
-          <button
-            type="submit"
-            className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 disabled:bg-indigo-300 disabled:hover:bg-indigo-300 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            disabled={transition.state === 'submitting'}
-          >
+          </Button>
+          <Button type="submit" ml={3} colorScheme="green" isLoading={transition.state === 'submitting'}>
             Create
-          </button>
-        </div>
-      </div>
-    </Form>
+          </Button>
+        </Flex>
+      </VStack>
+    </Box>
   );
 }
