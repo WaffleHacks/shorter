@@ -17,6 +17,7 @@ import {
   Grid,
   GridItem,
   Heading,
+  IconButton,
   Text,
   useDisclosure,
   useToast,
@@ -29,9 +30,19 @@ import { useRef } from 'react';
 import type { ActionFunction, LoaderFunction, ShortLink } from '~/lib/types';
 
 export const action: ActionFunction = async ({ request, params, context }) => {
+  const slug = params.slug as string;
+
   switch (request.method) {
+    case 'PUT':
+      const link = await context.links.get<ShortLink>(slug, { type: 'json' });
+      if (link) {
+        link.enabled = !link.enabled;
+        await context.links.put(slug, JSON.stringify(link));
+      }
+      return redirect(`/links/${slug}`);
+
     case 'DELETE':
-      await context.links.delete(params.slug as string);
+      await context.links.delete(slug);
       return redirect('/');
 
     default:
@@ -75,12 +86,14 @@ export default function ViewLink() {
   const { slug } = useParams();
   const data = useLoaderData<ShortLink>();
 
-  const fetcher = useFetcher();
+  const updateFetcher = useFetcher();
+
+  const deleteFetcher = useFetcher();
   const cancelButton = useRef<HTMLButtonElement>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const onDelete = () => {
-    fetcher.submit({}, { method: 'delete' });
+    deleteFetcher.submit({}, { method: 'delete' });
     onClose();
   };
 
@@ -133,11 +146,13 @@ export default function ViewLink() {
       <Divider color="gray.200" />
 
       <Item label="Enabled">
-        {data.enabled ? (
-          <CheckIcon h={6} w={6} color="green.500" aria-hidden="true" />
-        ) : (
-          <CloseIcon h={6} w={6} color="red.500" aria-hidden="true" />
-        )}
+        <IconButton
+          size="lg"
+          aria-label={data.enabled ? 'Disable' : 'Enable'}
+          icon={data.enabled ? <CheckIcon color="green.500" /> : <CloseIcon color="red.500" />}
+          onClick={() => updateFetcher.submit({}, { method: 'put' })}
+          isLoading={updateFetcher.state !== 'idle'}
+        />
       </Item>
 
       <Divider color="gray.200" />
@@ -155,7 +170,7 @@ export default function ViewLink() {
           colorScheme="red"
           rightIcon={<DeleteIcon />}
           onClick={onOpen}
-          isLoading={fetcher.state !== 'idle'}
+          isLoading={deleteFetcher.state !== 'idle'}
         >
           Delete
         </Button>
