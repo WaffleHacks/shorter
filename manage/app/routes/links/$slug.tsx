@@ -1,21 +1,43 @@
-import { ArrowBackIcon, CheckIcon, CloseIcon, CopyIcon, EditIcon } from '@chakra-ui/icons';
+import { ArrowBackIcon, CheckIcon, CloseIcon, CopyIcon, DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogCloseButton,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
   Box,
   Button,
   ButtonGroup,
   Link as ChakraLink,
+  Code,
   Divider,
   Flex,
   Grid,
   GridItem,
   Heading,
   Text,
+  useDisclosure,
   useToast,
 } from '@chakra-ui/react';
-import { Link, useLoaderData, useParams } from '@remix-run/react';
+import { json, redirect } from '@remix-run/cloudflare';
+import { Link, useFetcher, useLoaderData, useParams } from '@remix-run/react';
 import type { ReactNode } from 'react';
+import { useRef } from 'react';
 
-import type { LoaderFunction, ShortLink } from '~/lib/types';
+import type { ActionFunction, LoaderFunction, ShortLink } from '~/lib/types';
+
+export const action: ActionFunction = async ({ request, params, context }) => {
+  switch (request.method) {
+    case 'DELETE':
+      await context.links.delete(params.slug as string);
+      return redirect('/');
+
+    default:
+      return json({ message: 'method not allowed' }, { status: 405 });
+  }
+};
 
 export const loader: LoaderFunction = async ({ params, context }) => {
   const slug = params.slug as string;
@@ -31,6 +53,7 @@ function Item({ label, children }: ItemProps): JSX.Element {
   return (
     <Grid
       py={{ base: 4, sm: 5 }}
+      px={4}
       templateColumns={{ base: 'repeat(1, minmax(0, 1fr))', sm: 'repeat(3, minmax(0, 1fr))' }}
       gap={{ sm: 4 }}
     >
@@ -51,6 +74,16 @@ function Item({ label, children }: ItemProps): JSX.Element {
 export default function ViewLink() {
   const { slug } = useParams();
   const data = useLoaderData<ShortLink>();
+
+  const fetcher = useFetcher();
+  const cancelButton = useRef<HTMLButtonElement>(null);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const onDelete = () => {
+    fetcher.submit({}, { method: 'delete' });
+    onClose();
+  };
+
   const toast = useToast();
 
   const onCopy = async () => {
@@ -65,7 +98,7 @@ export default function ViewLink() {
   };
 
   return (
-    <Box>
+    <>
       <Box>
         <Flex justifyContent="space-between">
           <Heading size="lg" color="gray.900" fontWeight="md" className="text-lg leading-6 font-medium text-gray-900">
@@ -113,9 +146,41 @@ export default function ViewLink() {
 
       <Divider color="gray.200" />
 
-      <Button as={Link} to="/" mt={3} leftIcon={<ArrowBackIcon />}>
-        Back
-      </Button>
-    </Box>
+      <Flex mt={3} justifyContent="space-between">
+        <Button as={Link} to="/" leftIcon={<ArrowBackIcon />}>
+          Back
+        </Button>
+        <Button
+          variant="outline"
+          colorScheme="red"
+          rightIcon={<DeleteIcon />}
+          onClick={onOpen}
+          isLoading={fetcher.state !== 'idle'}
+        >
+          Delete
+        </Button>
+      </Flex>
+
+      <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelButton} onClose={onClose}>
+        <AlertDialogOverlay />
+
+        <AlertDialogContent>
+          <AlertDialogHeader>Delete short-link?</AlertDialogHeader>
+          <AlertDialogCloseButton />
+          <AlertDialogBody>
+            Are you sure you want to delete <Code colorScheme="yellow">{slug}</Code>? All references to this link will
+            become invalid.
+          </AlertDialogBody>
+          <AlertDialogFooter>
+            <Button ref={cancelButton} onClick={onClose}>
+              Nevermind
+            </Button>
+            <Button colorScheme="red" onClick={onDelete} ml={3}>
+              Delete
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
