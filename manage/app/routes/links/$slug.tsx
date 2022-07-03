@@ -10,6 +10,7 @@ import {
   GridItem,
   Heading,
   Text,
+  useToast,
 } from '@chakra-ui/react';
 import { Link, useLoaderData, useParams } from '@remix-run/react';
 import type { ReactNode } from 'react';
@@ -50,9 +51,18 @@ function Item({ label, children }: ItemProps): JSX.Element {
 export default function ViewLink() {
   const { slug } = useParams();
   const data = useLoaderData<ShortLink>();
+  const toast = useToast();
 
-  // TODO: add success notification
-  const onCopy = () => navigator.clipboard.writeText(`https://wffl.link/${slug}`);
+  const onCopy = async () => {
+    await navigator.clipboard.writeText(`https://wffl.link/${slug}`);
+    toast({
+      title: 'Link copied!',
+      status: 'success',
+      duration: 2500,
+      isClosable: true,
+      position: 'top-right',
+    });
+  };
 
   return (
     <Box>
