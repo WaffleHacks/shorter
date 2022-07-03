@@ -1,20 +1,8 @@
-import {
-  Box,
-  Button,
-  Flex,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Heading,
-  Input,
-  InputGroup,
-  InputLeftAddon,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
+import { FormControl, FormErrorMessage, FormLabel, Input, InputGroup, InputLeftAddon } from '@chakra-ui/react';
 import { json, redirect } from '@remix-run/cloudflare';
-import { Form, Link, useActionData, useTransition } from '@remix-run/react';
+import { useActionData } from '@remix-run/react';
 
+import Form from '~/components/Form';
 import type { ActionFunction, ShortLink } from '~/lib/types';
 
 interface Validated {
@@ -77,47 +65,24 @@ export const action: ActionFunction = async ({ request, context }) => {
 };
 
 export default function New(): JSX.Element {
-  const transition = useTransition();
   const data = useActionData<Validated>();
 
   return (
-    <Box as={Form} method="post" className="space-y-8 divide-y divide-gray-200 sm:space-y-5">
-      <VStack align="stretch">
-        <Box>
-          <Heading size="lg" color="gray.900" fontWeight="md">
-            New Short-link
-          </Heading>
-          <Text mt={1} size="sm" color="gray.500" maxW="2xl">
-            Create a new short-link for people to use.
-          </Text>
-        </Box>
+    <Form title="New Short-link" description="Create a new short-link for people to use">
+      <FormControl isRequired isInvalid={!!data?.errors?.slug}>
+        <FormLabel htmlFor="slug">Slug</FormLabel>
+        <InputGroup>
+          <InputLeftAddon children="wffl.link/" />
+          <Input id="slug" name="slug" defaultValue={data?.values.slug} />
+        </InputGroup>
+        {data?.errors?.slug && <FormErrorMessage>{data?.errors?.slug}</FormErrorMessage>}
+      </FormControl>
 
-        <Box mt={{ base: 6, sm: 5 }}>
-          <FormControl isRequired isInvalid={!!data?.errors?.slug}>
-            <FormLabel htmlFor="slug">Slug</FormLabel>
-            <InputGroup>
-              <InputLeftAddon children="wffl.link/" />
-              <Input id="slug" name="slug" defaultValue={data?.values.slug} />
-            </InputGroup>
-            {data?.errors?.slug && <FormErrorMessage>{data?.errors?.slug}</FormErrorMessage>}
-          </FormControl>
-
-          <FormControl mt={{ base: 6, sm: 5 }} isRequired isInvalid={!!data?.errors?.url}>
-            <FormLabel htmlFor="url">URL</FormLabel>
-            <Input id="url" name="url" defaultValue={data?.values.url} />
-            {data?.errors?.url && <FormErrorMessage>{data?.errors?.url}</FormErrorMessage>}
-          </FormControl>
-        </Box>
-
-        <Flex pt={5} justifyContent="end">
-          <Button as={Link} to="/" variant="outline">
-            Back
-          </Button>
-          <Button type="submit" ml={3} colorScheme="green" isLoading={transition.state !== 'idle'}>
-            Create
-          </Button>
-        </Flex>
-      </VStack>
-    </Box>
+      <FormControl mt={{ base: 6, sm: 5 }} isRequired isInvalid={!!data?.errors?.url}>
+        <FormLabel htmlFor="url">URL</FormLabel>
+        <Input id="url" name="url" defaultValue={data?.values.url} />
+        {data?.errors?.url && <FormErrorMessage>{data?.errors?.url}</FormErrorMessage>}
+      </FormControl>
+    </Form>
   );
 }
