@@ -47,7 +47,7 @@ export default function Edit(): JSX.Element {
   const result = useActionData<Validated>();
 
   return (
-    <Form title="Editing short-link" description="Change details about the short-link">
+    <Form title="Editing short-link" description="Change details about the short-link" returnTo={`/links/${slug}`}>
       <FormControl isReadOnly>
         <FormLabel htmlFor="slug">Slug</FormLabel>
         <InputGroup>

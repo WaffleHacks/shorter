@@ -27,7 +27,7 @@ export default function New(): JSX.Element {
   const data = useActionData<Validated>();
 
   return (
-    <Form title="New Short-link" description="Create a new short-link for people to use">
+    <Form title="New Short-link" description="Create a new short-link for people to use" returnTo="/">
       <FormControl isRequired isInvalid={!!data?.errors?.slug}>
         <FormLabel htmlFor="slug">Slug</FormLabel>
         <InputGroup>

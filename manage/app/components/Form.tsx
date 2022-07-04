@@ -5,10 +5,11 @@ import type { ReactNode } from 'react';
 interface Props {
   title: ReactNode;
   description: ReactNode;
+  returnTo: string;
   children?: ReactNode;
 }
 
-export default function Form({ title, description, children }: Props): JSX.Element {
+export default function Form({ title, description, returnTo, children }: Props): JSX.Element {
   const { state } = useTransition();
 
   return (
@@ -25,7 +26,7 @@ export default function Form({ title, description, children }: Props): JSX.Eleme
       <Box mt={{ base: 6, sm: 5 }}>{children}</Box>
 
       <Flex pt={5} justifyContent="end">
-        <Button as={Link} to="/" variant="outline">
+        <Button as={Link} to={returnTo} variant="outline">
           Back
         </Button>
         <Button type="submit" ml={3} colorScheme="green" isLoading={state !== 'idle'}>
