@@ -25,11 +25,14 @@ export const action: ActionFunction = async ({ request, params, context }) => {
 
   switch (request.method) {
     case 'PUT':
+      // Find the link
       const link = await context.links.get<ShortLink>(slug, { type: 'json' });
-      if (link) {
-        link.enabled = !link.enabled;
-        await context.links.put(slug, JSON.stringify(link));
-      }
+      if (!link) throw new Response('not found', { status: 404 });
+
+      // Change the state
+      link.enabled = !link.enabled;
+      await context.links.put(slug, JSON.stringify(link));
+
       return redirect(`/links/${slug}`);
 
     case 'DELETE':
@@ -43,7 +46,10 @@ export const action: ActionFunction = async ({ request, params, context }) => {
 
 export const loader: LoaderFunction = async ({ params, context }) => {
   const slug = params.slug as string;
-  return await context.links.get<ShortLink>(slug, { type: 'json' });
+  const link = await context.links.get<ShortLink>(slug, { type: 'json' });
+
+  if (link) return link;
+  else throw new Response('not found', { status: 404 });
 };
 
 interface ItemProps {

@@ -27,7 +27,7 @@ export const action: ActionFunction = async ({ request, context }) => {
 
   // Get the link
   const link = await context.links.get<ShortLink>(values.slug, { type: 'json' });
-  if (!link) return json({ message: 'not found' }, { status: 404 });
+  if (!link) throw new Response('not found', { status: 404 });
 
   // Update the values
   const updated = { ...link, url: values.url, enabled: params.get('enabled') === '' };
@@ -38,7 +38,10 @@ export const action: ActionFunction = async ({ request, context }) => {
 
 export const loader: LoaderFunction = async ({ params, context }) => {
   const slug = params.slug as string;
-  return await context.links.get<ShortLink>(slug, { type: 'json' });
+  const link = await context.links.get<ShortLink>(slug, { type: 'json' });
+
+  if (link) return link;
+  else throw new Response('not found', { status: 404 });
 };
 
 export default function Edit(): JSX.Element {

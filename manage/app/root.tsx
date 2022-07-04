@@ -6,6 +6,7 @@ import type { ReactNode } from 'react';
 import { useContext, useEffect } from 'react';
 
 import Layout from '~/components/Layout';
+import NotFound from '~/components/NotFound';
 import { ClientStyleContext, ServerStyleContext } from '~/lib/context';
 
 interface DocumentProps {
@@ -49,6 +50,31 @@ const Document = withEmotionCache(({ children }: DocumentProps, emotionCache): J
   );
 });
 
+interface BaseProps {
+  children: ReactNode;
+}
+
+function Base({ children }: BaseProps): JSX.Element {
+  const theme = extendTheme({
+    styles: {
+      global: {
+        body: {
+          backgroundColor: 'gray.200',
+          height: '100%',
+        },
+      },
+    },
+  });
+
+  return (
+    <Document>
+      <ChakraProvider theme={theme}>
+        <Layout>{children}</Layout>
+      </ChakraProvider>
+    </Document>
+  );
+}
+
 export const links: LinksFunction = () => [
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
   { rel: 'preconnect', href: 'https://fonts.gstatic.com' },
@@ -65,24 +91,17 @@ export const meta: MetaFunction = () => ({
 });
 
 export default function App() {
-  const theme = extendTheme({
-    styles: {
-      global: {
-        body: {
-          backgroundColor: 'gray.200',
-          height: '100%',
-        },
-      },
-    },
-  });
-
   return (
-    <Document>
-      <ChakraProvider theme={theme}>
-        <Layout>
-          <Outlet />
-        </Layout>
-      </ChakraProvider>
-    </Document>
+    <Base>
+      <Outlet />
+    </Base>
+  );
+}
+
+export function CatchBoundary(): JSX.Element {
+  return (
+    <Base>
+      <NotFound />
+    </Base>
   );
 }
