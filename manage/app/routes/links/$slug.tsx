@@ -1,17 +1,9 @@
-import { ArrowBackIcon, CheckIcon, CloseIcon, CopyIcon, DeleteIcon, EditIcon } from '@chakra-ui/icons';
+import { ArrowBackIcon, CheckIcon, CloseIcon, CopyIcon, EditIcon } from '@chakra-ui/icons';
 import {
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogCloseButton,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
   Box,
   Button,
   ButtonGroup,
   Link as ChakraLink,
-  Code,
   Divider,
   Flex,
   Grid,
@@ -19,14 +11,13 @@ import {
   Heading,
   IconButton,
   Text,
-  useDisclosure,
   useToast,
 } from '@chakra-ui/react';
 import { json, redirect } from '@remix-run/cloudflare';
 import { Link, useFetcher, useLoaderData, useParams } from '@remix-run/react';
 import type { ReactNode } from 'react';
-import { useRef } from 'react';
 
+import DeleteButton from '~/components/DeleteButton';
 import type { ActionFunction, LoaderFunction, ShortLink } from '~/lib/types';
 
 export const action: ActionFunction = async ({ request, params, context }) => {
@@ -86,16 +77,7 @@ export default function ViewLink() {
   const { slug } = useParams();
   const data = useLoaderData<ShortLink>();
 
-  const updateFetcher = useFetcher();
-
-  const deleteFetcher = useFetcher();
-  const cancelButton = useRef<HTMLButtonElement>(null);
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
-  const onDelete = () => {
-    deleteFetcher.submit({}, { method: 'delete' });
-    onClose();
-  };
+  const fetcher = useFetcher();
 
   const toast = useToast();
 
@@ -150,8 +132,8 @@ export default function ViewLink() {
           size="lg"
           aria-label={data.enabled ? 'Disable' : 'Enable'}
           icon={data.enabled ? <CheckIcon color="green.500" /> : <CloseIcon color="red.500" />}
-          onClick={() => updateFetcher.submit({}, { method: 'put' })}
-          isLoading={updateFetcher.state !== 'idle'}
+          onClick={() => fetcher.submit({}, { method: 'put' })}
+          isLoading={fetcher.state !== 'idle'}
         />
       </Item>
 
@@ -165,37 +147,8 @@ export default function ViewLink() {
         <Button as={Link} to="/" leftIcon={<ArrowBackIcon />}>
           Back
         </Button>
-        <Button
-          variant="outline"
-          colorScheme="red"
-          rightIcon={<DeleteIcon />}
-          onClick={onOpen}
-          isLoading={deleteFetcher.state !== 'idle'}
-        >
-          Delete
-        </Button>
+        <DeleteButton slug={slug as string} />
       </Flex>
-
-      <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelButton} onClose={onClose}>
-        <AlertDialogOverlay />
-
-        <AlertDialogContent>
-          <AlertDialogHeader>Delete short-link?</AlertDialogHeader>
-          <AlertDialogCloseButton />
-          <AlertDialogBody>
-            Are you sure you want to delete <Code colorScheme="yellow">{slug}</Code>? All references to this link will
-            become invalid.
-          </AlertDialogBody>
-          <AlertDialogFooter>
-            <Button ref={cancelButton} onClick={onClose}>
-              Nevermind
-            </Button>
-            <Button colorScheme="red" onClick={onDelete} ml={3}>
-              Delete
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   );
 }
