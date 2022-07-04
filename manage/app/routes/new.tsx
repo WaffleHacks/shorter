@@ -4,56 +4,15 @@ import { useActionData } from '@remix-run/react';
 
 import Form from '~/components/Form';
 import type { ActionFunction, ShortLink } from '~/lib/types';
-
-interface Validated {
-  errors?: Partial<Params>;
-  values: Params;
-}
-
-interface Params {
-  slug: string;
-  url: string;
-}
-
-const getString = (form: FormData, key: string): string | null => {
-  const value = form.get(key);
-  if (typeof value !== 'string') return null;
-  else return value;
-};
-
-const isValidURL = (test: string): boolean => {
-  try {
-    new URL(test);
-    return true;
-  } catch {
-    return false;
-  }
-};
-
-const validateInputs = (formData: FormData): Validated => {
-  const errors: Partial<Params> = {};
-
-  // Ensure fields exist
-  const slug = getString(formData, 'slug');
-  if (!slug) errors.slug = 'This field is required';
-  else if (!/^[a-z0-9-]+$/.test(slug)) errors.slug = 'Can only contain lowercase alphanumeric characters and dashes';
-
-  const url = getString(formData, 'url');
-  if (!url) errors.url = 'This field is required';
-  else if (!isValidURL(url)) errors.url = 'Invalid URL';
-
-  return {
-    errors: Object.keys(errors).length === 0 ? undefined : errors,
-    values: { slug: slug || '', url: url || '' },
-  };
-};
+import type { Validated } from '~/lib/validate';
+import validate from '~/lib/validate';
 
 export const action: ActionFunction = async ({ request, context }) => {
   const params = await request.formData();
 
   // Validate inputs
-  const result = validateInputs(params);
-  if (result.errors) return json(result);
+  const result = validate(params);
+  if (result.errors) return json(result, { status: 400 });
 
   const { values } = result;
 

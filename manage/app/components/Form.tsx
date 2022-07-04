@@ -3,9 +3,9 @@ import { Link, Form as RemixForm, useTransition } from '@remix-run/react';
 import type { ReactNode } from 'react';
 
 interface Props {
-  title: string;
-  description: string;
-  children: ReactNode;
+  title: ReactNode;
+  description: ReactNode;
+  children?: ReactNode;
 }
 
 export default function Form({ title, description, children }: Props): JSX.Element {
